@@ -1,56 +1,81 @@
 <template>
-    <b-container>
-        <b-row class="align-items-center">
-            <b-col cols="12">
-                <h1>dashboard</h1>
-            </b-col>
-            <b-col cols="12">
-                <b-button to="/" variant="info" @click.native="logout">
-                    ログアウト
-                </b-button>
-            </b-col>
-
-            <!-- 確認用 -->
-            <b-col cols="6" class="mt-2 text-left">
-                <span class="mr-2">{{ message }}</span>
-            </b-col>
-            <b-col cols="6" class="mt-2 text-right">
-                <b-button to="/" variant="secondary">
-                    戻る
-                </b-button>
-            </b-col>
-        </b-row>
-    </b-container>
+    <div>
+        <!-- 使用中のユーザー -->
+        <b-container>
+            <b-row class="d-flex align-items-center mt-3">
+                <template v-if="currentUser">
+                    <b-col cols="6" class="text-left">
+                        <span>{{ currentUserName }} さん、ようこそ！！！</span>
+                    </b-col>
+                    <b-col cols="3" class="text-right">
+                        <span>残高： ￥{{ currentUserDeposit }}</span>
+                    </b-col>
+                    <b-col cols="3" class="text-right">
+                        <b-button to="/" variant="outline-info" @click.native="logout">
+                            ログアウト
+                        </b-button>
+                    </b-col>
+                    <b-col cols="12" class="mt-3">
+                        <h1>ユーザ一覧</h1>
+                    </b-col>
+                </template>
+                <template v-else>
+                    <b-col cols="12" class="mt-3">
+                        <h4>Loading…</h4>
+                    </b-col>
+                </template>
+            </b-row>
+        </b-container>
+        <!-- 登録中のユーザー -->
+        <!-- ※詳細別途 このv-ifがないと、エラー発生-->
+        <template v-if="currentUser">
+            <LoggedinUsers :currentUserUid="currentUserUid" />
+        </template>
+    </div>
 </template>
 <script>
-import { firebase } from "../firebase.js";
+import LoggedinUsers from '../components/LoggedinUsers'
+import { firebase, db } from "../firebase";
 import { mapActions } from 'vuex'
-
 export default {
-    created() {
-      // 認証状態の変更検知
-      firebase
-      .auth()
-      .onAuthStateChanged(user => {
-        if (user) { 
-            this.message = 'ログイン中';
-        }
-      });
+    components: {
+        LoggedinUsers
     },
-    data() {
-        return {
-            message: '',
+    mounted() {
+        // ログイン中のユーザーを検知
+        firebase.auth().onAuthStateChanged(loggedinUser => {
+            if (loggedinUser) {                    
+                // Vuexへ更新されたデータを格納
+                db.collection('users').doc(loggedinUser.uid).get()
+                .then(res => {
+                    this.setUser(res.data());
+                })
+            }
+        });
+    },
+    computed: {
+        currentUser() {
+            return this.$store.state.user
+        },
+        currentUserName() {
+            return this.$store.state.user.displayName
+        },
+        currentUserDeposit() {
+            return this.$store.state.user.deposit
+        },
+        currentUserUid() {
+            return this.$store.state.user.uid
         }
     },
     methods: {
         ...mapActions(['setUser']),
+        // ログアウト
         logout() {
             firebase
             .auth()
             .signOut()
             .then(() => {
                 this.setUser(null);
-                console.log('logout成功');
             })
             .catch(error => {
                 console.log(error);
