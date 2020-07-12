@@ -42,11 +42,6 @@ export default {
         return {
             users: []
         }
-    },
-    computed: {
-        sample() {
-            return this.$store.state.user.uid
-        }
     }
 }
 </script>

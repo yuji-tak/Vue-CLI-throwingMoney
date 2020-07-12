@@ -1,5 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+import { firebase } from "./firebase";
+
 import Home from './views/Home.vue';
 import DashBoard from './views/DashBoard.vue';
 
@@ -12,11 +14,22 @@ export default new Router({
     routes: [
         {
             path: '/',
-            component: Home
+            component: Home,
         },
         {
             path: '/dashboard',
-            component: DashBoard
+            component: DashBoard,
+            beforeEnter(to, from, next) {
+                firebase.auth().onAuthStateChanged(user => {
+                    if (user) {
+                        console.log('ok');
+                        next();
+                    } else {
+                        console.log('ng');
+                        next('/')
+                    }
+                })
+            }
         }
     ]
 })
