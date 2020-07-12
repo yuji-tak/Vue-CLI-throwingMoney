@@ -31,7 +31,7 @@
               ログイン
             </b-button>
             <router-link to="/dashboard" v-if="isSignUp && !isAuthenticated" @click.native="login" class="d-block mt-1">ログインはこちらから</router-link>
-            <router-link to="to" v-else @click.native="reSignUp" class="d-block mt-1" style="cursor: pointer;">新規登録はこちらから</router-link>
+            <router-link to="/" v-else @click.native="reSignUp" class="d-block mt-1" style="cursor: pointer;">新規登録はこちらから</router-link>
           </b-col>
         </b-row>
       </b-container>
