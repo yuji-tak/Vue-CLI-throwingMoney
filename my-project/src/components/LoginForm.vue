@@ -1,5 +1,5 @@
 <template>
-    <b-container v-if="currentDir === '/'">
+    <b-container>
         <!-- 入力フォーム -->
         <b-row class="w-75 m-auto">
             <b-col v-if="isSignUp && !isAuthenticated" sm="4" class="d-flex align-items-center pr-0 mb-2">
@@ -48,9 +48,6 @@ export default {
         }
     },
     computed: {
-        currentDir() {
-            return this.$route.path
-        },
         isSignUp() {
             return this.$store.state.isSignUp
         },
