@@ -14,11 +14,11 @@
 <script>
 export default {
     computed: {
-        isSignUp() {
-            return this.$store.state.isSignUp
-        },
         currentDir() {
             return this.$route.path
+        },
+        isSignUp() {
+            return this.$store.state.isSignUp
         },
         isAuthenticated() {
             return this.$store.getters.isAuthenticated
