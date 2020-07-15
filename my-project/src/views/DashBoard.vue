@@ -4,19 +4,16 @@
         <b-container>
             <b-row class="d-flex align-items-center mt-3">
                 <template v-if="currentUser">
-                    <b-col cols="6" class="text-left">
+                    <b-col sm="6" class="text-left">
                         <span>{{ currentUserName }} さん、ようこそ！！！</span>
                     </b-col>
-                    <b-col cols="3" class="text-right">
+                    <b-col sm="3" class="text-right">
                         <span>残高： ￥{{ currentUserDeposit }}</span>
                     </b-col>
-                    <b-col cols="3" class="text-right">
+                    <b-col sm="3" class="text-right">
                         <b-button to="/" variant="outline-info" @click.native="logout">
                             ログアウト
                         </b-button>
-                    </b-col>
-                    <b-col cols="12" class="mt-3">
-                        <h1>ユーザ一覧</h1>
                     </b-col>
                 </template>
                 <template v-else>
@@ -29,7 +26,7 @@
         <!-- 登録中のユーザー -->
         <!-- ※詳細別途 このv-ifがないと、エラー発生-->
         <template v-if="currentUser">
-            <LoggedinUsers :currentUserUid="currentUserUid" />
+            <LoggedinUsers :currentUserUid="currentUserUid" :currentUserDeposit="currentUserDeposit" />
         </template>
     </div>
 </template>
