@@ -18,8 +18,8 @@ Vue.use(BootstrapVueIcons)
 Vue.config.productionTip = false
 
 new Vue({
-  router: router,
-  store: store,
+  router,
+  store,
   render: h => h(App), // render関数を用い、仮想DOMを返す
   // render: function(h) {
   //   return h(App);

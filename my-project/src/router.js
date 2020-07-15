@@ -1,5 +1,8 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+import { firebase } from "./firebase";
+
+import Home from './views/Home.vue';
 import DashBoard from './views/DashBoard.vue';
 
 Vue.use(Router) // use：プラグインを適用する
@@ -10,9 +13,23 @@ export default new Router({
 
     routes: [
         {
+            path: '/',
+            component: Home,
+        },
+        {
             path: '/dashboard',
             component: DashBoard,
-            props: true,
-        },
+            beforeEnter(to, from, next) {
+                firebase.auth().onAuthStateChanged(user => {
+                    if (user) {
+                        console.log('ok');
+                        next();
+                    } else {
+                        console.log('ng');
+                        next('/')
+                    }
+                })
+            }
+        }
     ]
 })

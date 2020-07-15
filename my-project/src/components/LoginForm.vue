@@ -1,5 +1,5 @@
 <template>
-    <b-container v-if="currentDir === '/'">
+    <b-container>
         <!-- 入力フォーム -->
         <b-row class="w-75 m-auto">
             <b-col v-if="isSignUp && !isAuthenticated" sm="4" class="d-flex align-items-center pr-0 mb-2">
@@ -30,29 +30,24 @@
             <b-button to="/dashboard" v-else variant="info" @click.native="login">
               ログイン
             </b-button>
-            <router-link to="/dashboard" v-if="!isAuthenticated" @click.native="login" class="d-block mt-1">ログインはこちらから</router-link>
+            <router-link to="/dashboard" v-if="isSignUp && !isAuthenticated" @click.native="login" class="d-block mt-1">ログインはこちらから</router-link>
             <router-link to="/" v-else @click.native="reSignUp" class="d-block mt-1" style="cursor: pointer;">新規登録はこちらから</router-link>
           </b-col>
         </b-row>
       </b-container>
 </template>
 <script>
-import { firebase } from "../firebase";
+import { firebase, db } from "../firebase";
 import { mapActions } from "vuex";
-
 export default {
     data() {
         return {
-            // 入力情報
             name: '',
             email: '',
             password: '',
         }
     },
     computed: {
-        currentDir() {
-            return this.$route.path
-        },
         isSignUp() {
             return this.$store.state.isSignUp
         },
@@ -69,11 +64,25 @@ export default {
             .createUserWithEmailAndPassword(this.email, this.password)
             .then(result => {
                 const user = result.user;
-                this.setUser(user);
-                // ユーザー名の登録
-                return user.updateProfile({
-                    displayName: this.name
-                });
+                // ユーザー名の登録 ※ここでは、デフォルトプロパティ以外は変更できない
+                user.updateProfile({
+                    displayName: this.name,
+                })
+                .then(() => {
+                    // dbで新規ドキュメントを作成
+                    db.collection('users').doc(user.uid).set({
+                        uid: user.uid,
+                        displayName: user.displayName,
+                        deposit: 1000
+                    })
+                })
+                .then(() => {
+                    db.collection('users').doc(user.uid).get()
+                        .then(res => {
+                        // 上記で作成したドキュメントをdbから取得し、Vuexへ格納
+                        this.setUser(res.data());
+                    })
+                })
             })
             .then(() => {
                 this.doSignUp();
@@ -114,7 +123,7 @@ export default {
             })
             .catch(error => {
                 console.log(error);
-            })
+            });
         },
     }
 }
