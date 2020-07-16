@@ -22,10 +22,8 @@ export default new Router({
             beforeEnter(to, from, next) {
                 firebase.auth().onAuthStateChanged(user => {
                     if (user) {
-                        console.log('ok');
                         next();
                     } else {
-                        console.log('ng');
                         next('/')
                     }
                 })

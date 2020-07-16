@@ -52,6 +52,7 @@ export default {
                     this.users.push(doc.data())
                 })
             });
+
         // 変化を検知する動的リクエスト
         db.collection('users')
             .onSnapshot(snapshot => {

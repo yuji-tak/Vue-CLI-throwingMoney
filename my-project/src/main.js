@@ -1,21 +1,45 @@
 import Vue from 'vue';
 import App from './App.vue'; // componentのオブジェクトを返す
-// Bootstrapを試用
+// Bootstrap
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
-// BootstrapVue・BootstrapVueIconsを試用
+// BootstrapVue・BootstrapVueIcons
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
 // vue-router
 import router from './router';
 // vuex
 import store from './store';
 
-// BootstrapVueを試用
-Vue.use(BootstrapVue)
-// BootstrapVueIconsを試用
-Vue.use(BootstrapVueIcons)
+// Firebase
+import { firebase, db } from "./firebase";
 
-Vue.config.productionTip = false
+// BootstrapVue
+Vue.use(BootstrapVue);
+// BootstrapVueIcons
+Vue.use(BootstrapVueIcons);
+
+Vue.config.productionTip = false;
+
+// beforeEach()
+router.beforeEach((to, from, next) => {
+  // 確認用
+  console.log('beforeEach');
+
+  // ログイン中のユーザーを検知
+  firebase.auth().onAuthStateChanged(loggedinUser => {
+    if (loggedinUser) {                
+        // Vuexへ更新されたデータを格納
+        db.collection('users').doc(loggedinUser.uid).get()
+        .then(res => {
+            // actionsへアクセス
+            store.commit('setUser', res.data());
+        })
+    } else {
+      store.commit('setUser', null)
+    }
+  });
+  next();
+})
 
 new Vue({
   router,
