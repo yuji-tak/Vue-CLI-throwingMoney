@@ -37,7 +37,7 @@
       </b-container>
 </template>
 <script>
-import { firebase, db } from "../firebase";
+import { firebase } from "../firebase";
 import { mapActions } from "vuex";
 export default {
     data() {
@@ -56,35 +56,12 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['doSignUp']),
-        // 新規登録
+        ...mapActions(['doSignUp', 'setUser']),
         signUp() {
-            firebase
-            .auth()
-            .createUserWithEmailAndPassword(this.email, this.password)
-            .then(result => {
-                const user = result.user;
-                // ユーザー名の登録 ※ここでは、デフォルトプロパティ以外は変更できない
-                user.updateProfile({
-                    displayName: this.name,
-                })
-                .then(() => {
-                    // dbで新規ドキュメントを作成
-                    db.collection('users').doc(user.uid).set({
-                        uid: user.uid,
-                        displayName: user.displayName,
-                        deposit: 1000
-                    })
-                })
-            })
-            .then(() => {
-                this.doSignUp();
-                this.name = '';
-                this.email = '';
-                this.password = '';
-            })
-            .catch(error => {
-                console.log(error);
+            this.$store.dispatch('signUp', {
+                email: this.email,
+                password: this.password,
+                name: this.name
             });
         },
         // ログイン

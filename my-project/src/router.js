@@ -22,6 +22,7 @@ export default new Router({
             beforeEnter(to, from, next) {
                 firebase.auth().onAuthStateChanged(user => {
                     if (user) {
+                        console.log('router.js');
                         next();
                     } else {
                         next('/')
