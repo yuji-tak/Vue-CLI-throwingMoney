@@ -1,6 +1,6 @@
 <template>
     <div>
-        <!-- 使用中のユーザー -->
+        <!-- 使用中のユーザ -->
         <b-container>
             <b-row class="d-flex align-items-center mt-3">
                 <template v-if="currentUser">
@@ -23,7 +23,7 @@
                 </template>
             </b-row>
         </b-container>
-        <!-- 登録中のユーザー -->
+        <!-- 登録中のユーザ -->
         <!-- ※詳細別途 このv-ifがないと、エラー発生-->
         <template v-if="currentUser">
             <LoggedinUsers :currentUserUid="currentUserUid" :currentUserDeposit="currentUserDeposit" />
@@ -32,23 +32,10 @@
 </template>
 <script>
 import LoggedinUsers from '../components/LoggedinUsers'
-import { firebase, db } from "../firebase";
-import { mapActions } from 'vuex'
+import { firebase } from "../firebase";
 export default {
     components: {
         LoggedinUsers
-    },
-    mounted() {
-        // ログイン中のユーザーを検知
-        firebase.auth().onAuthStateChanged(loggedinUser => {
-            if (loggedinUser) {                    
-                // Vuexへ更新されたデータを格納
-                db.collection('users').doc(loggedinUser.uid).get()
-                .then(res => {
-                    this.setUser(res.data());
-                })
-            }
-        });
     },
     computed: {
         currentUser() {
@@ -65,15 +52,11 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['setUser']),
         // ログアウト
         logout() {
             firebase
             .auth()
             .signOut()
-            .then(() => {
-                this.setUser(null);
-            })
             .catch(error => {
                 console.log(error);
             })

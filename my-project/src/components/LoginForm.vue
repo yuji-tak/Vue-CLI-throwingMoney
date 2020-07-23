@@ -56,7 +56,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['doSignUp', 'setUser']),
+        ...mapActions(['doSignUp']),
         // 新規登録
         signUp() {
             firebase
@@ -76,13 +76,6 @@ export default {
                         deposit: 1000
                     })
                 })
-                .then(() => {
-                    db.collection('users').doc(user.uid).get()
-                        .then(res => {
-                        // 上記で作成したドキュメントをdbから取得し、Vuexへ格納
-                        this.setUser(res.data());
-                    })
-                })
             })
             .then(() => {
                 this.doSignUp();
@@ -99,12 +92,8 @@ export default {
             firebase
             .auth()
             .signInWithEmailAndPassword(this.email, this.password)
-            .then(result => {
-                this.doSignUp();
-                const user = result.user;
-                this.setUser(user);
-            })
             .then(() => {
+                this.doSignUp();
                 this.email = '',
                 this.password = ''
             })
@@ -119,7 +108,6 @@ export default {
             .signOut()
             .then(() => {
                 this.doSignUp();
-                this.setUser(null);
             })
             .catch(error => {
                 console.log(error);
