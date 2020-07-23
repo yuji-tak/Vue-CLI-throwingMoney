@@ -10,36 +10,12 @@ import router from './router';
 // vuex
 import store from './store';
 
-// Firebase
-import { firebase, db } from "./firebase";
-
 // BootstrapVue
 Vue.use(BootstrapVue);
 // BootstrapVueIcons
 Vue.use(BootstrapVueIcons);
 
 Vue.config.productionTip = false;
-
-// beforeEach()
-router.beforeEach((to, from, next) => {
-  // 確認用
-  console.log('beforeEach');
-
-  // ログイン中のユーザーを検知
-  firebase.auth().onAuthStateChanged(loggedinUser => {
-    if (loggedinUser) {                
-        // Vuexへ更新されたデータを格納
-        db.collection('users').doc(loggedinUser.uid).get()
-        .then(res => {
-            // actionsへアクセス
-            store.commit('setUser', res.data());
-        })
-    } else {
-      store.commit('setUser', null)
-    }
-  });
-  next();
-})
 
 new Vue({
   router,
