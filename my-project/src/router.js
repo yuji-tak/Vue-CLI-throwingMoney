@@ -24,7 +24,6 @@ const router = new Router({
             beforeEnter(to, from, next) {
                 firebase.auth().onAuthStateChanged(user => {
                     if (user) {
-                        console.log('router.js');
                         next();
                     } else {
                         next('/')
@@ -36,9 +35,6 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
-    // 確認用
-    console.log('beforeEach');
-  
     // ログイン中のユーザーを検知
     firebase.auth().onAuthStateChanged(loggedinUser => {
       if (loggedinUser) {                
