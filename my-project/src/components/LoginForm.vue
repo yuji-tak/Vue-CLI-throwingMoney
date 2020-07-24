@@ -37,8 +37,6 @@
       </b-container>
 </template>
 <script>
-import { firebase } from "../firebase";
-import { mapActions } from "vuex";
 export default {
     data() {
         return {
@@ -56,7 +54,6 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['doSignUp', 'setUser']),
         signUp() {
             this.$store.dispatch('signUp', {
                 email: this.email,
@@ -64,31 +61,14 @@ export default {
                 name: this.name
             });
         },
-        // ログイン
         login() {
-            firebase
-            .auth()
-            .signInWithEmailAndPassword(this.email, this.password)
-            .then(() => {
-                this.doSignUp();
-                this.email = '',
-                this.password = ''
-            })
-            .catch(error => {
-                console.log(error);
+            this.$store.dispatch('login', {
+                email: this.email,
+                password: this.password,
             });
         },
-        // 再新規登録
         reSignUp() {
-            firebase
-            .auth()
-            .signOut()
-            .then(() => {
-                this.doSignUp();
-            })
-            .catch(error => {
-                console.log(error);
-            });
+            this.$store.dispatch('reSignUp');
         },
     }
 }

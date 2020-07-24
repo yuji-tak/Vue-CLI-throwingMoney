@@ -49,12 +49,48 @@ export default new Vuex.Store({
                     .then(() => {
                         // dbで新規作成されたデータを反映
                         db.collection('users').doc(user.uid).get()
-                        .then(res => {
-                            dispatch('setUser', res.data());
+                        .then(result => {
+                            dispatch('setUser', result.data());
                         })
                     })
+                })
+                .catch(error => {
+                    console.log(error);
                 });
-                commit('doSignUp');
+            // commitとdispatchを使い分ける為に使用
+            commit('doSignUp');
+        },
+        login({ dispatch }, authData) {
+            firebase
+                .auth()
+                .signInWithEmailAndPassword(authData.email, authData.password)
+                .then(() => {
+                    dispatch('doSignUp');
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
+        reSignUp({ dispatch }) {
+            firebase
+                .auth()
+                .signOut()
+                .then(() => {
+                    dispatch('doSignUp');
+                    // logout()ではページ遷移を伴う処理を行っているので、setUserを更新する必要はない
+                    dispatch('setUser', null);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
+        logout() {
+            firebase
+                .auth()
+                .signOut()
+                .catch(error => {
+                    console.log(error);
+                });
         },
     }
 });

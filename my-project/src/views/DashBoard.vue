@@ -32,7 +32,6 @@
 </template>
 <script>
 import LoggedinUsers from '../components/LoggedinUsers'
-import { firebase } from "../firebase";
 export default {
     components: {
         LoggedinUsers
@@ -52,14 +51,8 @@ export default {
         }
     },
     methods: {
-        // ログアウト
         logout() {
-            firebase
-            .auth()
-            .signOut()
-            .catch(error => {
-                console.log(error);
-            })
+            this.$store.dispatch('logout');
         },
     }
 }
